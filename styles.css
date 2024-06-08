@@ -1,0 +1,46 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.wheel {
+    position: relative;
+    width: 50em;
+    height: 50em;
+    border-radius: 50%;
+    list-style: none;
+    overflow: hidden;
+}
+
+li {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 50%;
+    transform-origin: 0% 100%;
+}
+
+p {
+    position: absolute;
+    left: -100%;
+    width: 200%;
+    height: 200%;
+    text-align: center;
+    /* transform: skewY(0deg) rotate(30deg); */
+    padding-top: 20px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* li:first-child {
+    transform: rotate(0deg) skewY(0deg);
+}
+
+li:nth-child(2) {
+    transform: rotate(90deg) skewY(0deg);
+} */

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Random Wheel</title>
+</head>
+    <body>
+
+        <ul class="wheel">
+            <div></div>
+        </ul>
+
+    </body>
+
+    <script>
+
+        const getRandomColour = () => {
+            var letters = "0123456789ABCDEF";
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        const correctAngle = (current) => {
+            if (current < 0) {
+                return current * -1;
+            }
+            else {
+                return -Math.abs(current);
+            }
+        }
+        
+        
+        let options = [];
+        const wheel = document.getElementsByClassName("wheel")[0];
+
+        console.log(wheel);
+
+        const degrees = 360;
+        const section_angle = degrees / options.length;
+        let current_rotation = 0;
+
+        const refresh_wheel = () => {
+            options.forEach(o => {
+                const skew = 90 - section_angle;
+                const text_center = section_angle / 2;
+
+                console.log(degrees, section_angle, skew, text_center, current_rotation);
+
+                const li = document.createElement("li");
+                const p = document.createElement("p");
+
+                li.style.transform = "rotate(" + current_rotation + "deg) skewY(" + correctAngle(skew) + "deg)";
+                p.style.transform = "skewY(" + skew + "deg) rotate(" + text_center + "deg)";
+
+                const colour = getRandomColour();
+                p.innerHTML = o;
+                p.style.background = colour;
+
+
+                li.appendChild(p);
+                wheel.appendChild(li);
+
+                current_rotation += section_angle;
+            })
+
+            wheel.style.animation = "spin";
+            wheel.style.animationDuration = "20000ms";
+            wheel.style.animationIterationCount = "infinite"
+            wheel.style.animationTimingFunction = "linear"
+        }
+
+
+    </script>
+</html>
