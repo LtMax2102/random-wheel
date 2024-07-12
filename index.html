@@ -5,16 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>Random Wheel</title>
-</head>
+    </head>
     <body>
 
-        <ul class="wheel">
+        <!-- <ul class="wheel">
             <div></div>
-        </ul>
+        </ul> -->
+
+        <canvas id="myCanvas" width="1000" height="500" style="margin: 40px">
+        </canvas>
+
+        <div class="sidebar">
+            <form>
+                <textarea></textarea>
+            </form>
+        </div>
 
     </body>
 
     <script>
+
+        var colors = [];
+
+        var t = document.querySelector("textarea");
+        t.value = "adam\neve\n";
+        var angleOffset = 0;
+        var spinSpeed = 1;
+
+        window.onload = () => {
+            if (t.value.split('\n').length > colors.length) colors.push(getRandomColour());
+            else if (t.value.split('\n').length < colors.length) colors.pop();
+            draw_wheel(t.value.split('\n'));
+            // spin();
+        }
+
+        t.oninput = () => {
+            if (t.value.split('\n').length > colors.length) colors.push(getRandomColour());
+            else if (t.value.split('\n').length < colors.length) colors.pop();
+            draw_wheel(t.value.split('\n'));
+        }
+
 
         const getRandomColour = () => {
             var letters = "0123456789ABCDEF";
@@ -25,55 +55,107 @@
             return color;
         }
 
-        const correctAngle = (current) => {
-            if (current < 0) {
-                return current * -1;
+        const spin = () => {
+            angleOffset += 0.01;
+
+            draw_wheel(t.value.split('\n'));
+
+            requestAnimationFrame(spin);
+        }
+
+        const spinQ = () => {
+            if (spinSpeed > 0) {
+                angleOffset += spinSpeed;
+                spinSpeed -= 0.005;
+    
+                draw_wheel(t.value.split('\n'));
+    
+                requestAnimationFrame(spinQ);
             }
             else {
-                return -Math.abs(current);
+                spinSpeed = Math.random(1, 7);
+                cancelAnimationFrame(spin);
+            }   
+        }
+
+        const draw_wheel = (inputs) => {
+            var c = document.getElementById("myCanvas");
+            var ctx = c.getContext("2d");
+
+            var x = c.width / 2;
+            var y = c.height / 2;
+            var r = 200;
+            var parts = inputs.length - 1;
+
+            for (let i = 0; i < parts; i++) {
+                const startAngle = (2 * Math.PI / parts) * i + angleOffset;
+                const endAngle = (2 * Math.PI / parts) * (i + 1) + angleOffset;
+
+                
+                ctx.fillStyle = colors[i];
+
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.arc(x, y, r, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fill();
+
+                const textAngle = (startAngle + endAngle) / 2;
+                const textX = x + (r / 2) * Math.cos(textAngle);
+                const textY = y + (r / 2) * Math.sin(textAngle);
+
+                ctx.save();
+                ctx.translate(textX, textY);
+                ctx.rotate(textAngle);
+
+                ctx.fillStyle = "#000000"; // Text color
+                ctx.font = "15px Arial"; // Text font
+                ctx.textAlign = "center"; // Center the text horizontally
+                ctx.textBaseline = "middle"; // Center the text vertically
+
+                ctx.fillText(inputs[i], 0, 0);
+
+                ctx.restore();
+
+            }
+            ctx.font = "30px ariel";
+        
+            ctx.beginPath();
+            ctx.moveTo(x + 175, y);
+            ctx.lineTo(x + 200, y - 25);
+            ctx.lineTo(x + 200, y + 25);
+            ctx.fillStyle = "black";
+            ctx.fill();
+
+            // This is from chatGPT because i personally have no experience with sin cos and tan. Me dumb.
+            for (let i = 0; i < parts; i++) {
+                // Calculate the angle for the current part
+                const angle = (2 * Math.PI / parts) * i + angleOffset;
+
+                // Calculate the end point of the line
+                const endX = x + r * Math.cos(angle);
+                const endY = y + r * Math.sin(angle);
+
+                // Draw the line from the center to the circumference
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
             }
         }
-        
-        
-        let options = [];
-        const wheel = document.getElementsByClassName("wheel")[0];
-
-        console.log(wheel);
-
-        const degrees = 360;
-        const section_angle = degrees / options.length;
-        let current_rotation = 0;
-
-        const refresh_wheel = () => {
-            options.forEach(o => {
-                const skew = 90 - section_angle;
-                const text_center = section_angle / 2;
-
-                console.log(degrees, section_angle, skew, text_center, current_rotation);
-
-                const li = document.createElement("li");
-                const p = document.createElement("p");
-
-                li.style.transform = "rotate(" + current_rotation + "deg) skewY(" + correctAngle(skew) + "deg)";
-                p.style.transform = "skewY(" + skew + "deg) rotate(" + text_center + "deg)";
-
-                const colour = getRandomColour();
-                p.innerHTML = o;
-                p.style.background = colour;
 
 
-                li.appendChild(p);
-                wheel.appendChild(li);
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
 
-                current_rotation += section_angle;
-            })
-
-            wheel.style.animation = "spin";
-            wheel.style.animationDuration = "20000ms";
-            wheel.style.animationIterationCount = "infinite"
-            wheel.style.animationTimingFunction = "linear"
+        c.onclick = () => {
+            spinQ();
         }
 
+
+        // window.onload = () => {
+        //     spin();
+        // }
 
     </script>
 </html>
